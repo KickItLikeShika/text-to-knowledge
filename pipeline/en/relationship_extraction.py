@@ -1,8 +1,7 @@
-import torch
 import opennre
+import torch
 
-
-relation_model = opennre.get_model('wiki80_bert_softmax')
+relation_model = opennre.get_model("wiki80_bert_softmax")
 if torch.cuda.is_available():
     relation_model = relation_model.cuda()
 
@@ -21,16 +20,21 @@ def relationship_extraction(text: str, linked_entities: dict):
     extracted_relationships = {}
     for source_entity, source_value in linked_entities.items():
         for target_entity, target_value in linked_entities.items():
-
-            relationship = relation_model.infer({'text': text, 'h': {'pos': [source_value['start'], source_value['end']]}, 't': {'pos': [target_value['start'], target_value['end']]}})
-            if relationship[1] >= 0.5: # relationship threshold
+            relationship = relation_model.infer(
+                {
+                    "text": text,
+                    "h": {"pos": [source_value["start"], source_value["end"]]},
+                    "t": {"pos": [target_value["start"], target_value["end"]]},
+                }
+            )
+            if relationship[1] >= 0.5:  # relationship threshold
                 extracted_relationships[source_entity] = {
                     "target_entity": target_entity,
-                    "source_entity_type": source_value['entity_type'],
-                    "target_entity_type": target_value['entity_type'],
+                    "source_entity_type": source_value["entity_type"],
+                    "target_entity_type": target_value["entity_type"],
                     "relationship": relationship[0],
-                    "source_nel_description": source_value['nel_description'],
-                    "target_nel_description": target_value['nel_description']
+                    "source_nel_description": source_value["nel_description"],
+                    "target_nel_description": target_value["nel_description"],
                 }
 
     return extracted_relationships
