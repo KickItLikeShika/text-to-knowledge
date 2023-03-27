@@ -20,13 +20,11 @@ def named_entity_linking(text: str) -> dict:
     doc = nlp(text)
     linked_entities = {}
     for linked_entity in doc._.linkedEntities:
-        for ent in doc.ents:
-            if ent.text == linked_entity.label:
-                linked_entities[ent.text] = {
-                    "entity_type": ent.label_,
-                    "nel_description": linked_entity.description,
-                    "start": doc[ent.start].idx,  # char start
-                    "end": doc[ent.end].idx,  # char end
-                }
+        linked_entities[linked_entity.label] = {
+            "entity_type": linked_entity.get_super_entities()[0].label,
+            "nel_description": linked_entity.description,
+            "start": doc[linked_entity.get_span().start].idx,  # char start
+            "end": doc[linked_entity.get_span().end].idx,  # char end
+        }
 
     return linked_entities
