@@ -20,6 +20,9 @@ def relationship_extraction(text: str, linked_entities: dict):
     extracted_relationships = {}
     for source_entity, source_value in linked_entities.items():
         for target_entity, target_value in linked_entities.items():
+            if source_entity == target_entity:
+                continue
+
             relationship = relation_model.infer(
                 {
                     "text": text,
@@ -27,6 +30,7 @@ def relationship_extraction(text: str, linked_entities: dict):
                     "t": {"pos": [target_value["start"], target_value["end"]]},
                 }
             )
+
             if relationship[1] >= 0.5:  # relationship threshold
                 extracted_relationships[source_entity] = {
                     "target_entity": target_entity,
